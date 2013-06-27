@@ -1,40 +1,18 @@
-<cfcomponent output="false" displayname="Multi Module" mixin="Oracle">
+<cfcomponent output="false" displayname="Oracle DB Link">
 
-  <cffunction name="init" access="public" output="false" returntype="any">
+	<cffunction name="init" access="public" output="false" returntype="any">
 		<cfset this.version = "1.1.8" />
 		<cfreturn this />
 	</cffunction>
-	
-	<cffunction name="$query" returntype="struct" access="public" output="false">
-		<cfargument name="sql" type="array" required="true">
-		<cfargument name="limit" type="numeric" required="false" default=0>
-		<cfargument name="offset" type="numeric" required="false" default=0>
-		<cfargument name="parameterize" type="boolean" required="true">
-		<cfargument name="$primaryKey" type="string" required="false" default="">
+
+	<cffunction name="$convertMaxRowsToLimit" returntype="struct" access="public" output="false" mixin="oracle">
+		<cfargument name="argScope" type="struct" required="true">
 		<cfscript>
-			var loc = {};
-//			EPSO PATCH cahyosi(2013-04-12) - prevent missing property after using findOne or findByKey
-//			arguments = $convertMaxRowsToLimit(arguments);
-			arguments.sql = $removeColumnAliasesInOrderClause(arguments.sql);
-			arguments.sql = $addColumnsToSelectAndGroupBy(arguments.sql);
-			if (arguments.limit > 0)
-			{
-				loc.beforeWhere = "SELECT #arguments.$primaryKey# FROM (SELECT tmp.#arguments.$primaryKey#, rownum rnum FROM (";
-				loc.afterWhere = ") tmp WHERE rownum <=" & arguments.limit+arguments.offset & ")" & " WHERE rnum >" & arguments.offset;
-				ArrayPrepend(arguments.sql, loc.beforeWhere);
-				ArrayAppend(arguments.sql, loc.afterWhere);
-			}
-
-			// oracle doesn't support limit and offset in sql
-			StructDelete(arguments, "limit", false);
-			StructDelete(arguments, "offset", false);
-			loc.returnValue = $performQuery(argumentCollection=arguments);
-			loc.returnValue = $handleTimestampObject(loc.returnValue);
+		return arguments.argScope;
 		</cfscript>
-		<cfreturn loc.returnValue>
 	</cffunction>
-
-	<cffunction name="$getColumnInfo" returntype="query" access="public" output="false">
+	
+	<cffunction name="$getColumnInfo" returntype="query" access="public" output="false" mixin="oracle">
 		<cfargument name="table" type="string" required="true">
 		<cfargument name="datasource" type="string" required="true">
 		<cfargument name="username" type="string" required="true">
