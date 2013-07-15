@@ -66,7 +66,7 @@
 		to mimic this we will throw an error if the query result is empty
 		 --->
 		<cfif !loc.returnValue.RecordCount>
-			<!--- EPSO PATCH cahyosi(2013-05-24) maybe we can get the metadata from dblink? --->
+			<!--- get the metadata from dblink --->
 			<cfquery attributeCollection="#loc.args#">
 				SELECT DB_LINK FROM ALL_SYNONYMS WHERE SYNONYM_NAME='#UCase(arguments.table)#'
 			</cfquery>
