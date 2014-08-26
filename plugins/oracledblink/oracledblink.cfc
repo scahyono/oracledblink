@@ -1,15 +1,8 @@
 <cfcomponent output="false" displayname="Oracle DB Link">
 
 	<cffunction name="init" access="public" output="false" returntype="any">
-		<cfset this.version = "1.1.8" />
+		<cfset this.version = "1.1.8,1.3,1.3.1" />
 		<cfreturn this />
-	</cffunction>
-
-	<cffunction name="$convertMaxRowsToLimit" returntype="struct" access="public" output="false" mixin="oracle">
-		<cfargument name="argScope" type="struct" required="true">
-		<cfscript>
-		return arguments.argScope;
-		</cfscript>
 	</cffunction>
 
 	<cffunction name="$getColumnInfo" returntype="query" access="public" output="false" mixin="oracle">

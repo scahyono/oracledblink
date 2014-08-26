@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +78,8 @@ public class CFWheelsCoreIT {
     
 	@BeforeClass
 	static public void setUpServices() throws Exception {
+		Files.copy(Paths.get("wheels/Connection.cfc"), Paths.get("wheels/Connection.cfc.bak"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get("wheels/tests/populate.cfm"), Paths.get("wheels/tests/populate.cfm.bak"), StandardCopyOption.REPLACE_EXISTING);
 		Path path = Paths.get("target/failsafe-reports");
 		if (!Files.exists(path)) Files.createDirectory(path);
 		driver = new CustomHtmlUnitDriver();
@@ -143,6 +146,11 @@ public class CFWheelsCoreIT {
 
 	@AfterClass
 	static public void tearDownServices() throws Exception {
+		Files.copy(Paths.get("wheels/Connection.cfc.bak"), Paths.get("wheels/Connection.cfc"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get("wheels/tests/populate.cfm.bak"), Paths.get("wheels/tests/populate.cfm"), StandardCopyOption.REPLACE_EXISTING);
+		Files.delete(Paths.get("wheels/Connection.cfc.bak"));
+		Files.delete(Paths.get("wheels/tests/populate.cfm.bak"));
+
 		driver.quit();
 	}
 
@@ -152,6 +160,10 @@ public class CFWheelsCoreIT {
 		if (!"".equals(verificationErrorString)) {
 			fail(verificationErrorString);
 		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		setUpServices();
 	}
 
 }
