@@ -80,6 +80,7 @@ public class CFWheelsCoreIT {
 	static public void setUpServices() throws Exception {
 		Files.copy(Paths.get("wheels/Connection.cfc"), Paths.get("wheels/Connection.cfc.bak"), StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(Paths.get("wheels/tests/populate.cfm"), Paths.get("wheels/tests/populate.cfm.bak"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get("wheels/tests/env.cfm"), Paths.get("wheels/tests/env.cfm.bak"), StandardCopyOption.REPLACE_EXISTING);
 		Path path = Paths.get("target/failsafe-reports");
 		if (!Files.exists(path)) Files.createDirectory(path);
 		driver = new CustomHtmlUnitDriver();
@@ -102,6 +103,11 @@ public class CFWheelsCoreIT {
 		content = content.replace("CREATE TRIGGER bi_#loc.i# BEFORE INSERT ON #loc.i# FOR EACH ROW BEGIN SELECT #loc.seq#.nextval INTO :NEW.<cfif loc.i IS \"photogalleries\">photogalleryid<cfelseif loc.i IS \"photogalleryphotos\">photogalleryphotoid<cfelse>id</cfif> FROM dual; END;",
 				"ALTER TABLE #loc.i# MODIFY COLUMN <cfif loc.i IS \"photogalleries\">photogalleryid<cfelseif loc.i IS \"photogalleryphotos\">photogalleryphotoid<cfelse>id</cfif> #loc.identityColumnType# DEFAULT #loc.seq#.nextval");
 		Files.write(Paths.get("wheels/tests/populate.cfm"), content.getBytes());
+		
+		content = new String(Files.readAllBytes(Paths.get("wheels/tests/env.cfm")));
+		content = content.replace("<cfset application.wheels.plugins = {}>","<!--- code removed --->");
+		content = content.replace("<cfset application.wheels.mixins = {}>","<!--- code removed --->");
+		Files.write(Paths.get("wheels/tests/env.cfm"), content.getBytes());
 
 		content = new String(Files.readAllBytes(Paths.get("wheels/Plugins.cfc")));
 		content = content.replace("mixableComponents = \"application,dispatch,controller,model,cache,base,connection,microsoftsqlserver,mysql,oracle,postgresql,h2\"","mixableComponents = \"application,dispatch,controller,model,cache,base,connection,microsoftsqlserver,mysql,oracle,postgresql,h2,test\"");
@@ -148,8 +154,10 @@ public class CFWheelsCoreIT {
 	static public void tearDownServices() throws Exception {
 		Files.copy(Paths.get("wheels/Connection.cfc.bak"), Paths.get("wheels/Connection.cfc"), StandardCopyOption.REPLACE_EXISTING);
 		Files.copy(Paths.get("wheels/tests/populate.cfm.bak"), Paths.get("wheels/tests/populate.cfm"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get("wheels/tests/env.cfm.bak"), Paths.get("wheels/tests/env.cfm"), StandardCopyOption.REPLACE_EXISTING);
 		Files.delete(Paths.get("wheels/Connection.cfc.bak"));
 		Files.delete(Paths.get("wheels/tests/populate.cfm.bak"));
+		Files.delete(Paths.get("wheels/tests/env.cfm.bak"));
 
 		driver.quit();
 	}
