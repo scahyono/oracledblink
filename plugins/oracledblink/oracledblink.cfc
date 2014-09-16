@@ -1,10 +1,9 @@
 <cfcomponent output="false" displayname="Oracle DB Link">
 
 	<cffunction name="init" access="public" output="false" returntype="any">
-		<cfargument name="dblinksign" default="@">
+		<cfparam name="application.oracledblink.dblinksign" default="@">
 		<cfscript>
 			this.version = "1.1.8,1.3,1.3.1";
-			application.oracledblink.dblinksign =  arguments.dblinksign;
 
 			return this;
 		</cfscript>
